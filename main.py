@@ -15,7 +15,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 import seaborn as sns
 
-# Load datasets
+# load datasets
 train_df = pd.read_csv('train.csv')
 test_df = pd.read_csv('test.csv')
 
