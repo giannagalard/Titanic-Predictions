@@ -40,3 +40,12 @@ train_df = train_df.drop(['Cabin'], axis=1)
 
 # print the values removed from train dataframe
 print(train_df.isnull().sum())
+
+# select all columns that are objects
+categorical_columns = train_df.select_dtypes(include=['object'])
+# print number of categorical columns
+print(f'There are {len(categorical_columns.columns.tolist())} categorical columns in the dataset:')
+# for each column in categorical columns, print column name and number of unique values
+for cols in categorical_columns.columns: 
+    print(cols,':', len(categorical_columns[cols].unique()),'labels')
+
