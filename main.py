@@ -47,5 +47,5 @@ categorical_columns = train_df.select_dtypes(include=['object'])
 print(f'There are {len(categorical_columns.columns.tolist())} categorical columns in the dataset:')
 # for each column in categorical columns, print column name and number of unique values
 for cols in categorical_columns.columns: 
-    print(cols,':', len(categorical_columns[cols].unique()),'labels')
+    print(len(categorical_columns[cols].unique()),'labels in', cols)
 
