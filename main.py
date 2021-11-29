@@ -13,18 +13,30 @@
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
+import seaborn as sns
 
 # Load datasets
 train_df = pd.read_csv('train.csv')
 test_df = pd.read_csv('test.csv')
 
-# print the first 5 rows of the dataset
+# print shape of train and test dataframes
+print(train_df.shape) 
+print(test_df.shape) 
+
+# print first 5 rows of train dataframe
 print(train_df.head())
 
-# determine how many rows contain missing values
-print(train_df.isnull().sum())
+# print datatype of train dataframe
+print(train_df.dtypes)
 
-# print the unique values for the columns "embarked", "cabin", and "ticket"
-print(train_df.embarked.unique())
-print(train_df.cabin.unique())
-print(train_df.ticket.unique())
+#print train dataframe info
+print(train_df.info())
+
+# generate heatmap of train dataframe 
+sns.heatmap(train_df.isnull(), yticklabels=False, cbar=False, cmap='viridis') # change color whenever
+
+# remove missing values from train dataframe
+train_df = train_df.drop(['Cabin'], axis=1)
+
+# print the values removed from train dataframe
+print(train_df.isnull().sum())
