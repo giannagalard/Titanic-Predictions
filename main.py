@@ -19,6 +19,8 @@ import seaborn as sns
 train_df = pd.read_csv('train.csv')
 test_df = pd.read_csv('test.csv')
 
+# ---------------------- OUTPUT DATA
+
 # print shape of train and test dataframes
 print(train_df.shape) 
 print(test_df.shape) 
@@ -48,4 +50,13 @@ print(f'There are {len(categorical_columns.columns.tolist())} categorical column
 # for each column in categorical columns, print column name and number of unique values
 for cols in categorical_columns.columns: 
     print(len(categorical_columns[cols].unique()),'labels in', cols)
+
+
+# ---------------------- DATA CLEANING
+
+# create boolean variable for each of the embarkment points
+train_df['Embarked'] = train_df['Embarked'].fillna('S')
+train_df['Embarked'] = train_df['Embarked'].map({'S': 0, 'C': 1, 'Q': 2})
+# print the boolean variable for each of the embarkment points
+print(train_df['Embarked'].value_counts())
 
