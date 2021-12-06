@@ -60,3 +60,10 @@ train_df['Embarked'] = train_df['Embarked'].map({'S': 0, 'C': 1, 'Q': 2})
 # print the boolean variable for each of the embarkment points
 print(train_df['Embarked'].value_counts())
 
+# Create a boolean for is male. 
+#not sure if this is how you do it
+
+train_df_sex = pd.get_dummies(train_df['Sex'])
+isMale = train_df_sex['male']
+isMale
+
