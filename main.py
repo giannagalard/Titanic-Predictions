@@ -16,9 +16,8 @@ from matplotlib import pyplot as plt
 import seaborn as sns 
 # divide data into train and test sets
 from sklearn.model_selection import train_test_split 
-# logistic regression 
-from sklearn.linear_model import LogisticRegression
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+# gaussian algorithm
+from sklearn.gaussian_process import GaussianProcessRegressor
 
 # load datasets
 train_df = pd.read_csv('train.csv')
@@ -71,28 +70,27 @@ train_df['is_male'] = (train_df.Sex == 'male') * 1
 train_df.loc[:, 'has_cabin'] = 0
 train_df.loc[train_df.Cabin.isna(), 'has_cabin'] = 1
 
-# fill in missing age values
-# replace with 100
-train_df.loc[train_df.Age.isna(), 'Age'] = 100 
+# fill missing age values as 100 
+train_df['Age'].fillna(100)
 
 # split data in train and test sets
 selected = train_df[["Pclass", "Name", "Sex", "Age", "SibSp", "Parch", "Ticket", "Fare", "Cabin", "Embarked"]] 
 Y = train_df["Survived"]
-X_train, X_test, y_train, y_test = train_test_split(X, Y, random_state = 7)
 
 # one hot encoding 
 one_hot_encoded_training_predictors = pd.get_dummies(selected) 
 one_hot_encoded_training_predictors.head()
 X = one_hot_encoded_training_predictors
+X_train, X_test, y_train, y_test = train_test_split(X, Y, random_state = 7)
 
 # ---------------------- PICK 3 CLASSIFICTION ALGORITHMS
-# 1. logistic regression
+# 1. logistic regression algorithm
 log = LogisticRegression(max_iter = 1000) 
 log.fit(X_train, y_train)
-y_pred_log = log.predict(X_test)
-y_pred_log = log.predict(X_test)
-print("logistic reg accuracy is: {:}" .format(log.score(X_test, y_test))) 
-scores_accuracy = cross_val_score(log, X, Y, cv = 10, scoring = 'accuracy')
+y_pred_LR = logreg.predict(X_test)
+y_pred_LR = LR.predict(X_test)
+print("logistic reg accuracy is: {:}" .format(LR.score(X_test, y_test))) 
+scores_accuracy = cross_val_score(LR, X, Y, cv=10, scoring = 'accuracy')
 print('Cross Validation results:')
 print(" logistic reg average accuracy is %2.3f" % scores_accuracy.mean())
 
