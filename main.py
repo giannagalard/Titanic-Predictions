@@ -6,7 +6,7 @@
 #   | | | | || (_| | | | | | (__  | |  | | |  __/ (_| | | (__| |_| | (_) | | | \__ \
 #   \_/ |_|\__\__,_|_| |_|_|\___| \_|  |_|  \___|\__,_|_|\___|\__|_|\___/|_| |_|___/
                                                                                   
-# AUTHOTS: Austin Lee, George Melek, Gianna Galard
+# AUTHORS: Gianna Galard, George Melek, Austin Li
 # CSC412 PROFESSOR IMBERMAN
 # DATE: 11/23/2021
 
@@ -16,6 +16,9 @@ from matplotlib import pyplot as plt
 import seaborn as sns 
 # divide data into train and test sets
 from sklearn.model_selection import train_test_split 
+# logistic regression 
+from sklearn.linear_model import LogisticRegression
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
 # load datasets
 train_df = pd.read_csv('train.csv')
@@ -36,11 +39,8 @@ print(train_df.dtypes)
 #print train dataframe info
 print(train_df.info())
 
-# generate heatmap of train dataframe 
-sns.heatmap(train_df.isnull(), yticklabels=False, cbar=False, cmap='viridis') # change color whenever
-
 # remove missing values from train dataframe
-train_df = train_df.drop(['Cabin'], axis=1)
+train_df = train_df.drop(['Cabin'], axis = 1)
 
 # print the values removed from train dataframe
 print(train_df.isnull().sum())
@@ -75,7 +75,27 @@ train_df.loc[train_df.Cabin.isna(), 'has_cabin'] = 1
 # replace with 100
 train_df.loc[train_df.Age.isna(), 'Age'] = 100 
 
+# split data in train and test sets
+selected = train_df[["Pclass", "Name", "Sex", "Age", "SibSp", "Parch", "Ticket", "Fare", "Cabin", "Embarked"]] 
+Y = train_df["Survived"]
+X_train, X_test, y_train, y_test = train_test_split(X, Y, random_state = 7)
 
-# divide the data into a training set and a testing set
-X = train_df[["Pclass", "Age", "Sex", "SibSp", "Parch", "Embarked"]]
-X_train, X_test, y_train, y_test = train_test_split(X, Y, random_state = 0)
+# one hot encoding 
+one_hot_encoded_training_predictors = pd.get_dummies(selected) 
+one_hot_encoded_training_predictors.head()
+X = one_hot_encoded_training_predictors
+
+# ---------------------- PICK 3 CLASSIFICTION ALGORITHMS
+# 1. logistic regression
+log = LogisticRegression(max_iter = 1000) 
+log.fit(X_train, y_train)
+y_pred_log = log.predict(X_test)
+y_pred_log = log.predict(X_test)
+print("logistic reg accuracy is: {:}" .format(log.score(X_test, y_test))) 
+scores_accuracy = cross_val_score(log, X, Y, cv = 10, scoring = 'accuracy')
+print('Cross Validation results:')
+print(" logistic reg average accuracy is %2.3f" % scores_accuracy.mean())
+
+# 2. decision tree classifier algorithm
+
+# 3. catboost classifier algorithm
