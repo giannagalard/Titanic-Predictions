@@ -55,15 +55,16 @@ for cols in categorical_columns.columns:
 # ---------------------- DATA CLEANING
 
 # create boolean variable for each of the embarkment points
-train_df['Embarked'] = train_df['Embarked'].fillna('S')
-train_df['Embarked'] = train_df['Embarked'].map({'S': 0, 'C': 1, 'Q': 2})
-# print the boolean variable for each of the embarkment points
-print(train_df['Embarked'].value_counts())
+# for each value in the Embarked column
+for uwu in train_df.Embarked.unique(): 
+    # if it is a string (just to be safe lol)
+    if type(uwu) == str: 
+        # create a new column with the boolean value
+        train_df['emb' + uwu] = (train_df.Embarked == uwu) * 1 
 
-# Create a boolean for is male. 
-#not sure if this is how you do it
+# create boolean variable for is male
+train_df['is_male'] = (train_df.Sex == 'male') * 1 
 
-train_df_sex = pd.get_dummies(train_df['Sex'])
-isMale = train_df_sex['male']
-isMale
-
+# create boolean variable for has cabin
+train_df.loc[:, 'has_cabin'] = 0
+train_df.loc[train_df.Cabin.isna(), 'has_cabin'] = 1
