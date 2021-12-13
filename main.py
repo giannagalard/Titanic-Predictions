@@ -13,7 +13,9 @@
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
-import seaborn as sns
+import seaborn as sns 
+# divide data into train and test sets
+from sklearn.model_selection import train_test_split 
 
 # load datasets
 train_df = pd.read_csv('train.csv')
@@ -68,3 +70,12 @@ train_df['is_male'] = (train_df.Sex == 'male') * 1
 # create boolean variable for has cabin
 train_df.loc[:, 'has_cabin'] = 0
 train_df.loc[train_df.Cabin.isna(), 'has_cabin'] = 1
+
+# fill in missing age values
+# replace with 100
+train_df.loc[train_df.Age.isna(), 'Age'] = 100 
+
+
+# divide the data into a training set and a testing set
+X = train_df[["Pclass", "Age", "Sex", "SibSp", "Parch", "Embarked"]]
+X_train, X_test, y_train, y_test = train_test_split(X, Y, random_state = 0)
