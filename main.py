@@ -22,6 +22,8 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.linear_model import LogisticRegression
 # decision tree
 from sklearn.tree import DecisionTreeClassifier
+# svm
+from sklearn.svm import SVC
 # accuracy 
 from sklearn.metrics import accuracy_score
 
@@ -79,7 +81,8 @@ dataset.loc[dataset.Cabin.isna(), 'has_cabin'] = 1
 print(dataset.isnull().sum())
 
 # fill missing age values as 100 
-dataset['Age'].fillna(100)
+dataset['Age'] = dataset['Age'].fillna(100)
+dataset
 
 # Split data and apply label encoder to the sex and embarked columns
 featName = ["Pclass", "Age", "Sex", "SibSp", "Parch", "Embarked"]
@@ -124,5 +127,13 @@ accuracy = accuracy_score(y_test, y_pred) # calculate accuracy
 
 dta = DecisionTreeClassifier(max_depth = 5).fit(X_train, y_train) # create decision tree model
 y_pred = dta.predict(X_test) # predict test set
+
+accuracy = accuracy_score(y_test, y_pred) # calculate accuracy
+
+#   _     _  
+# _)  \/ //) 
+
+svcModel = SVC(kernel = 'linear').fit(X_train, y_train) # create svm model
+y_pred = svcModel.predict(X_test) # predict test set
 
 accuracy = accuracy_score(y_test, y_pred) # calculate accuracy
