@@ -33,7 +33,7 @@ from sklearn.metrics import classification_report, roc_auc_score, plot_confusion
 
 
 # import data from csv file for training
-dataset = pd.read_csv('train.csv')
+dataset = pd.read_csv('data/train.csv')
 # dataset = pd.read_csv('/Users/george/Downloads/train.csv')
 dataset # print dataset
 
