@@ -5,7 +5,7 @@
 #   | | | | __/ _` | '_ \| |/ __| |  __/ '__/ _ \/ _` | |/ __| __| |/ _ \| '_ \/ __|
 #   | | | | || (_| | | | | | (__  | |  | | |  __/ (_| | | (__| |_| | (_) | | | \__ \
 #   \_/ |_|\__\__,_|_| |_|_|\___| \_|  |_|  \___|\__,_|_|\___|\__|_|\___/|_| |_|___/
-                                                                                  
+
 # AUTHORS: Gianna Galard, George Melek, Austin Li
 # CSC412 PROFESSOR IMBERMAN
 # DATE: 11/23/2021
@@ -14,14 +14,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-
-from matplotlib import pyplot as plt
-import seaborn as sns 
-# divide data into train and test sets
-from sklearn.model_selection import train_test_split 
-# gaussian algorithm
-from sklearn.gaussian_process import GaussianProcessRegressor
-
 # split data
 from sklearn.model_selection import train_test_split
 # encoding
@@ -30,33 +22,32 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.linear_model import LogisticRegression
 # decision tree
 from sklearn.tree import DecisionTreeClassifier
+from sklearn import tree
 # svm
 from sklearn.svm import SVC
 # accuracy 
 from sklearn.metrics import accuracy_score
+from sklearn.model_selection import cross_val_score
+from sklearn.metrics import classification_report, roc_auc_score, plot_confusion_matrix
+
+
 
 # import data from csv file for training
 dataset = pd.read_csv('train.csv')
+# dataset = pd.read_csv('/Users/george/Downloads/train.csv')
 dataset # print dataset
 
-# divide data into train and test sets
-from sklearn.model_selection import train_test_split
-X = dataset.iloc[:, 1:].values
-y = dataset.iloc[:, 0].values
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 0)
+# shape of train dataframes
+dataset.shape 
 
+# first 5 rows of train dataframe
+dataset.head()
 
-# look at the data and see if there are any summary statistics that might give you some insights
-
-# print shape of train and test sets
-print(X_train.shape)
-print(X_test.shape)
-
-# print first 5 rows of train dataset
-print(dataset.head())
-
-# print train dataframe info
+# print train dataframe info 
 dataset.info()
+
+# generate statistics
+dataset.describe()
 
 # output columns with labels
 # select all columns that are objects
@@ -67,7 +58,6 @@ print(f'There are {len(categorical_columns.columns.tolist())} categorical column
 for cols in categorical_columns.columns: 
     print(cols,':', len(categorical_columns[cols].unique()),'labels')
 
-# Data cleaning and feature engineering
 
 # create boolean for each of the embarkment points
 # for each value in the Embarked column
@@ -92,19 +82,17 @@ print(dataset.isnull().sum())
 dataset['Age'] = dataset['Age'].fillna(100)
 dataset
 
+# split data in train and test sets
+selected = dataset[["Pclass", "Name", "Sex", "Age", "SibSp", "Parch", "Ticket", "Fare", "Cabin", "Embarked"]] 
+Y = dataset["Survived"]
 
-# remove missing values from train dataframe
-train_df = train_df.drop(['Cabin'], axis = 1)
+# drop rows with nul and nan
+dataset.dropna(how = 'all')
 
 # Split data and apply label encoder to the sex and embarked columns
 featName = ["Pclass", "Age", "Sex", "SibSp", "Parch", "Embarked"]
 X = dataset[featName]
 X # print
-
-# drop rows with nul and nan
-dataset.dropna(how = 'all')
-
-
 
 label_Encoder = LabelEncoder()
 X["Sex"] = label_Encoder.fit_transform(X["Sex"])
@@ -115,71 +103,82 @@ X # print
 y = dataset["Survived"]
 y # print
 
-
-X_train, X_test, y_train, y_test = train_test_split(X,y, random_state = 0)
+X_train, X_test, y_train, y_test = train_test_split(X,y,test_size = 0.3, random_state = 42)
 
 # create an accurate model
 # 1. Logistic Regression Algorithm
 # 2. Decision Tree Algorithm
 # 3. Support Vector Machine Algorithm
 
-#    _                                                           
-#   //             _/_                                           
-#  // __ _,  o _   /  o _.   __  _  _,  __  _  _   _   o __ ____ 
-# </_(_)(_)_<_/_)_<__<_(__  / (_</_(_)_/ (_</_/_)_/_)_<_(_)/ / <_
-#        /|                         /|                           
-#       |/                         |/                            
+                                                                          
+#  __            _     _   _        _____                         _         
+# |  |   ___ ___|_|___| |_|_|___   | __  |___ ___ ___ ___ ___ ___|_|___ ___ 
+# |  |__| . | . | |_ -|  _| |  _|  |    -| -_| . |  _| -_|_ -|_ -| | . |   |
+# |_____|___|_  |_|___|_| |_|___|  |__|__|___|_  |_| |___|___|___|_|___|_|_|
+#           |___|                            |___|                          
 
 logitModel = LogisticRegression().fit(X_train, y_train) # create logistic regression model
 y_pred = logitModel.predict(X_test) # predict test set
 
 accuracy = accuracy_score(y_test, y_pred) # calculate accuracy
 
-#   __/   _   __   .  ,    .  _,_ ,__,     -/- ,_   _   _ 
-# _(_/(__(/__(_,__/__/_)__/__(_/_/ / (_   _/__/ (__(/__(/_
+# print accuracy
+print("Accuracy Score -> {}".format(accuracy))
+
+y_pred_LR = logitModel.predict(X_test)
+print(classification_report(y_test, y_pred_LR))
+print("ROC AUC Score is {}".format(roc_auc_score(y_test, y_pred_LR)))
+
+scores_accuracy = cross_val_score(logitModel, X, y, cv = 9, scoring = 'accuracy')
+print('Cross Validation results:')
+print("Logistic reg average accuracy is %2.3f" % scores_accuracy.mean())
+
+print("Confusion Matrix for Logistic Regression")
+displr = plot_confusion_matrix(logitModel, X_test, y_test,cmap=plt.cm.Blues, values_format='d')
+
+#  ____          _     _            _____            
+# |    \ ___ ___|_|___|_|___ ___   |_   _|__ ___ ___ 
+# |  |  | -_|  _| |_ -| | . |   |    | ||  _| -_| -_|
+# |____/|___|___|_|___|_|___|_|_|    |_||_| |___|___|                                             
 
 dta = DecisionTreeClassifier(max_depth = 5).fit(X_train, y_train) # create decision tree model
 y_pred = dta.predict(X_test) # predict test set
 
 accuracy = accuracy_score(y_test, y_pred) # calculate accuracy
 
-#   _     _  
-# _)  \/ //) 
+# print accuracy
+print("Accuracy Score -> {}".format(accuracy))
+
+print(classification_report(y_pred,y_test))
+
+print("Confusion Matrix for Decision Tree Classifier")
+decision_confusion = plot_confusion_matrix(dta, X_test, y_test ,cmap=plt.cm.Blues , values_format='d')
+
+fig = plt.figure(figsize=(25,20))
+_ = tree.plot_tree(dta,
+                   feature_names = ['PassengerId', 'Pclass', 'Age', 'SibSp', 'Parch', 'Fare',
+       'Cabin', 'male', 'C', 'Q', 'S'],
+                   max_depth = 3,
+                   filled=True)
+
+text_representation = tree.export_text(dta)
+print(text_representation)
+
+#  _____ _____ _____ 
+# |   __|  |  |     |
+# |__   |  |  | | | |
+# |_____|\___/|_|_|_|
 
 svcModel = SVC(kernel = 'linear').fit(X_train, y_train) # create svm model
 y_pred = svcModel.predict(X_test) # predict test set
 
-# create boolean variable for has cabin
-train_df.loc[:, 'has_cabin'] = 0
-train_df.loc[train_df.Cabin.isna(), 'has_cabin'] = 1
-
-# fill missing age values as 100 
-train_df['Age'].fillna(100)
-
-# split data in train and test sets
-selected = train_df[["Pclass", "Name", "Sex", "Age", "SibSp", "Parch", "Ticket", "Fare", "Cabin", "Embarked"]] 
-Y = train_df["Survived"]
-
-# one hot encoding 
-one_hot_encoded_training_predictors = pd.get_dummies(selected) 
-one_hot_encoded_training_predictors.head()
-X = one_hot_encoded_training_predictors
-X_train, X_test, y_train, y_test = train_test_split(X, Y, random_state = 7)
-
-# ---------------------- PICK 3 CLASSIFICTION ALGORITHMS
-# 1. logistic regression algorithm
-log = LogisticRegression(max_iter = 1000) 
-log.fit(X_train, y_train)
-y_pred_LR = logreg.predict(X_test)
-y_pred_LR = LR.predict(X_test)
-print("logistic reg accuracy is: {:}" .format(LR.score(X_test, y_test))) 
-scores_accuracy = cross_val_score(LR, X, Y, cv=10, scoring = 'accuracy')
-print('Cross Validation results:')
-print(" logistic reg average accuracy is %2.3f" % scores_accuracy.mean())
-
-# 2. decision tree classifier algorithm
-
-# 3. catboost classifier algorithm
-
 accuracy = accuracy_score(y_test, y_pred) # calculate accuracy
+
+# print accuracy
+print("Accuracy Score -> {}".format(accuracy))
+
+print(classification_report(y_test, y_pred))
+
+print("Confusion Matrix for Support Vector Machines")
+support_confusion = plot_confusion_matrix(svcModel, X_test, y_test ,cmap=plt.cm.Blues , values_format='d')
 
