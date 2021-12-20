@@ -14,6 +14,14 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+
+from matplotlib import pyplot as plt
+import seaborn as sns 
+# divide data into train and test sets
+from sklearn.model_selection import train_test_split 
+# gaussian algorithm
+from sklearn.gaussian_process import GaussianProcessRegressor
+
 # split data
 from sklearn.model_selection import train_test_split
 # encoding
@@ -84,6 +92,10 @@ print(dataset.isnull().sum())
 dataset['Age'] = dataset['Age'].fillna(100)
 dataset
 
+
+# remove missing values from train dataframe
+train_df = train_df.drop(['Cabin'], axis = 1)
+
 # Split data and apply label encoder to the sex and embarked columns
 featName = ["Pclass", "Age", "Sex", "SibSp", "Parch", "Embarked"]
 X = dataset[featName]
@@ -91,6 +103,7 @@ X # print
 
 # drop rows with nul and nan
 dataset.dropna(how = 'all')
+
 
 
 label_Encoder = LabelEncoder()
@@ -136,4 +149,37 @@ accuracy = accuracy_score(y_test, y_pred) # calculate accuracy
 svcModel = SVC(kernel = 'linear').fit(X_train, y_train) # create svm model
 y_pred = svcModel.predict(X_test) # predict test set
 
+# create boolean variable for has cabin
+train_df.loc[:, 'has_cabin'] = 0
+train_df.loc[train_df.Cabin.isna(), 'has_cabin'] = 1
+
+# fill missing age values as 100 
+train_df['Age'].fillna(100)
+
+# split data in train and test sets
+selected = train_df[["Pclass", "Name", "Sex", "Age", "SibSp", "Parch", "Ticket", "Fare", "Cabin", "Embarked"]] 
+Y = train_df["Survived"]
+
+# one hot encoding 
+one_hot_encoded_training_predictors = pd.get_dummies(selected) 
+one_hot_encoded_training_predictors.head()
+X = one_hot_encoded_training_predictors
+X_train, X_test, y_train, y_test = train_test_split(X, Y, random_state = 7)
+
+# ---------------------- PICK 3 CLASSIFICTION ALGORITHMS
+# 1. logistic regression algorithm
+log = LogisticRegression(max_iter = 1000) 
+log.fit(X_train, y_train)
+y_pred_LR = logreg.predict(X_test)
+y_pred_LR = LR.predict(X_test)
+print("logistic reg accuracy is: {:}" .format(LR.score(X_test, y_test))) 
+scores_accuracy = cross_val_score(LR, X, Y, cv=10, scoring = 'accuracy')
+print('Cross Validation results:')
+print(" logistic reg average accuracy is %2.3f" % scores_accuracy.mean())
+
+# 2. decision tree classifier algorithm
+
+# 3. catboost classifier algorithm
+
 accuracy = accuracy_score(y_test, y_pred) # calculate accuracy
+
