@@ -210,9 +210,9 @@ cvsLasso = []
 
 Lambda = []
 
-for i in range(1,10): 
-    lasso = Lasso(alpha = i * 0.25) 
-    lasso.fit(X_train, y_train) 
+for i in range(1,10): # loop over lambda values
+    lasso = Lasso(alpha = i * 0.25)  # create lasso model
+    lasso.fit(X_train, y_train) # fit model
     scores = cross_val_score(lasso, X, y, cv = 10) # 10-fold cross validation
     cvsAvg = np.mean(scores)*100 # calculate average
     cvsLasso.append(cvsAvg) # append to list
@@ -222,3 +222,15 @@ for i in range(1,10):
 for i in range(len(cvsLasso)):
     print("Lambda: {} \t Cross Validation Score: {}".format(Lambda[i], cvsLasso[i]))
 
+# ridge regression
+cvsRidge = []
+
+alpha = []
+
+for i in range(1,10): # loop through different alpha values
+    ridge = Ridge(alpha = i * 0.25)  # create ridge regression model
+    ridge.fit(X_train, y_train)  # fit model
+    scores = cross_val_score(ridge, X, y, cv = 10) # 10-fold cross validation
+    cvsAvg = np.mean(scores)*100 # calculate average
+    cvsRidge.append(cvsAvg) # append to list
+    alpha.append(i * 0.25) # append to list
