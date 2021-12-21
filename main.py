@@ -29,6 +29,10 @@ from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import cross_val_score
 from sklearn.metrics import classification_report, roc_auc_score, plot_confusion_matrix
+# ridge
+from sklearn.linear_model import Ridge
+# lasso
+from sklearn.linear_model import Lasso
 
 
 
@@ -181,4 +185,40 @@ print(classification_report(y_test, y_pred))
 
 print("Confusion Matrix for Support Vector Machines")
 support_confusion = plot_confusion_matrix(svcModel, X_test, y_test ,cmap=plt.cm.Blues , values_format='d')
+
+# ridge regression
+cvsRidge = []
+
+alpha = []
+
+for i in range(1,10): 
+    ridge = Ridge(alpha = i * 0.25) 
+    ridge.fit(X_train, y_train) 
+    scores = cross_val_score(ridge, X, y, cv = 10) # 10-fold cross validation
+    cvsAvg = np.mean(scores)*100 # calculate average
+    cvsRidge.append(cvsAvg) # append to list
+    alpha.append(i * 0.25) # append to list
+
+# print different cross-validation scores
+for i in range(len(cvsRidge)):
+    print("Alpha: {} \t Cross Validation Score: {}".format(alpha[i], cvsRidge[i]))
+
+
+
+# lasso regression
+cvsLasso = []
+
+Lambda = []
+
+for i in range(1,10): 
+    lasso = Lasso(alpha = i * 0.25) 
+    lasso.fit(X_train, y_train) 
+    scores = cross_val_score(lasso, X, y, cv = 10) # 10-fold cross validation
+    cvsAvg = np.mean(scores)*100 # calculate average
+    cvsLasso.append(cvsAvg) # append to list
+    Lambda.append(i * 0.25) # append to list
+
+# print different cross-validation scores
+for i in range(len(cvsLasso)):
+    print("Lambda: {} \t Cross Validation Score: {}".format(Lambda[i], cvsLasso[i]))
 
